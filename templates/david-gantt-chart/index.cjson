@@ -1,0 +1,17 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "description": "Dataviz by David Bacci: https://www.linkedin.com/in/davbacci/",
+  "autosize": "pad",
+  "padding": {
+    "left": 5,
+    "right": 0,
+    "top": 5,
+    "bottom": 0
+  },
+  "signals": $import "./signals/index.cjson",
+  "data": $import "./data/index.cjson",
+  "marks": $import "./marks/index.cjson",
+  "axes": $import "./axes/index.cjson",
+  "scales": $import "./scales/index.cjson",
+  "config": $import "./config/index.cjson"
+}

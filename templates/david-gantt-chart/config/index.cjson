@@ -1,0 +1,24 @@
+{
+    "view": {"stroke": "transparent"},
+    "style": {
+        "col": {"fontSize": 11},
+        "cell": {
+        "strokeWidth": {"value": "0"}
+        }
+    },
+    "font": "Segoe UI",
+    "text": {
+        "font": "Segoe UI",
+        "fontSize": 10,
+        "baseline": "middle"
+    },
+    "axis": {
+        "labelColor": {
+        "signal": "textColour"
+        },
+        "labelFontSize": 10
+    },
+    "title": {
+        "color": {"signal": "textColour"}
+    }
+}

@@ -1,0 +1,1216 @@
+[
+    {
+      "name": "buttonMarks",
+      "description": "All buttons",
+      "type": "group",
+      "from": {"data": "buttons"},
+      "clip": {
+        "signal": "!showButtons"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "datum.side=='left'?datum.x:columnsWidth+ganttWidth-datum.x"
+          },
+          "width": {"value": 50},
+          "y": {"value": -60},
+          "height": {"signal": "18"},
+          "stroke": {
+            "signal": "'#7f7f7f'"
+          },
+          "strokeWidth": {"value": 1},
+          "cornerRadiusTopLeft": {
+            "field": "leftRadius"
+          },
+          "cornerRadiusBottomLeft": {
+            "field": "leftRadius"
+          },
+          "cornerRadiusTopRight": {
+            "field": "rightRadius"
+          },
+          "cornerRadiusBottomRight": {
+            "field": "rightRadius"
+          },
+          "cursor": {
+            "value": "pointer"
+          },
+          "fill": [
+            {
+              "test": "indexof( hover,datum.text)>-1",
+              "value": "#4e95d9"
+            },
+            {
+              "test": "datum.text=='Close' && data('collapsedPhases').length == data('phases').length",
+              "value": "#4e95d9"
+            },
+            {
+              "test": "datum.text=='Open' && data('collapsedPhases').length == 0",
+              "value": "#4e95d9"
+            },
+            {
+              "test": "datum.text=='Days' && dayBandwidthRound == minDayBandwidth",
+              "value": "#4e95d9"
+            },
+            {
+              "test": "datum.text=='Months' && dayBandwidthRound>=minYearBandwidth && dayBandwidthRound<minDayBandwidth",
+              "value": "#4e95d9"
+            },
+            {
+              "test": "datum.text=='Years' && dayBandwidthRound<minYearBandwidth",
+              "value": "#4e95d9"
+            },
+            {"value": "white"}
+          ]
+        }
+      },
+      "marks": [
+        {
+          "name": "buttonText",
+          "interactive": false,
+          "type": "text",
+          "encode": {
+            "update": {
+              "text": {
+                "signal": "parent.text"
+              },
+              "baseline": {
+                "value": "middle"
+              },
+              "align": {
+                "value": "center"
+              },
+              "x": {
+                "signal": "item.mark.group.width/2"
+              },
+              "y": {"signal": "10"},
+              "fill": [
+                {
+                  "test": "indexof( hover,parent.text)>-1",
+                  "value": "white"
+                },
+                {
+                  "test": "parent.text=='Close' && data('collapsedPhases').length == data('phases').length",
+                  "value": "white"
+                },
+                {
+                  "test": "parent.text=='Open' && data('collapsedPhases').length == 0",
+                  "value": "white"
+                },
+                {
+                  "test": "parent.text=='Days' && dayBandwidthRound == minDayBandwidth",
+                  "value": "white"
+                },
+                {
+                  "test": "parent.text=='Months' && dayBandwidthRound>=minYearBandwidth && dayBandwidthRound<minDayBandwidth",
+                  "value": "white"
+                },
+                {
+                  "test": "parent.text=='Years' && dayBandwidthRound<minYearBandwidth",
+                  "value": "white"
+                },
+                {"value": "#7f7f7f"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "xDomainText",
+      "interactive": false,
+      "type": "text",
+      "encode": {
+        "update": {
+          "text": {
+            "signal": "showDomainSpanLabel?timeFormat(xDom[0],'%d/%m/%y') +' - ' + timeFormat(xDom[1],'%d/%m/%y'):null"
+          },
+          "baseline": {"value": "top"},
+          "align": {"value": "right"},
+          "x": {
+            "signal": "columnsWidth+ganttWidth"
+          },
+          "y": {
+            "signal": "showDomainSpanLabel?height+15:0"
+          },
+          "fill": {
+            "signal": "textColour"
+          }
+        }
+      }
+    },
+    {
+      "name": "phaseBackgrounds",
+      "description": "Background rect for phases",
+      "type": "rect",
+      "clip": true,
+      "zindex": 0,
+      "from": {"data": "phases"},
+      "encode": {
+        "update": {
+          "x": {"value": 0},
+          "x2": {
+            "signal": "columnsWidth"
+          },
+          "y": {
+            "signal": "scale('y', datum['id'])"
+          },
+          "height": {
+            "signal": "bandwidth('y')"
+          },
+          "fill": {"value": "#dceaf7"},
+          "opacity": {"value": 0.3}
+        }
+      }
+    },
+    {
+      "name": "taskLabelSizes",
+      "description": "Hidden label sizes to support tooltips when the task name doesn't completely fit",
+      "type": "text",
+      "clip": true,
+      "from": {"data": "yScale"},
+      "encode": {
+        "enter": {
+          "x": {"value": -100},
+          "y": {"value": -100},
+          "fill": {
+            "value": "transparent"
+          },
+          "text": {
+            "signal": "datum['task']"
+          },
+          "fontSize": {"value": 11}
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "name": "taskTooltips",
+      "description": "Hidden rect to support tooltips when the task name doesn't completely fit",
+      "from": {
+        "data": "taskLabelSizes"
+      },
+      "clip": true,
+      "zindex": 101,
+      "encode": {
+        "update": {
+          "x": {"value": -15},
+          "x2": {
+            "signal": "taskColumnWidth"
+          },
+          "y": {
+            "signal": "scale('y', datum.datum['id'])"
+          },
+          "height": {
+            "signal": "bandwidth('y')"
+          },
+          "fill": {
+            "value": "transparent"
+          },
+          "tooltip": {
+            "signal": "datum.bounds.x2 - datum.bounds.x1>=taskColumnWidth-16? datum.datum['task']:null"
+          },
+          "cursor": {
+            "signal": "datum.datum['phase'] == datum.datum['task']?'pointer':'auto'"
+          }
+        }
+      }
+    },
+    {
+      "type": "group",
+      "name": "columnHolder",
+      "style": "cell",
+      "layout": {
+        "padding": {
+          "signal": "columnPadding"
+        },
+        "bounds": "flush",
+        "align": "each"
+      },
+      "encode": {
+        "enter": {
+          "x": {"signal": "0"},
+          "stroke": {
+            "value": "transparent"
+          },
+          "width": {
+            "signal": "columnsWidth"
+          },
+          "height": {"signal": "height"}
+        }
+      },
+      "marks": [
+        {
+          "type": "group",
+          "name": "taskColumnWidth",
+          "style": "cell",
+          "title": {
+            "text": "Task",
+            "anchor": "start",
+            "frame": "group",
+            "align": "left",
+            "dx": 16
+          },
+          "encode": {
+            "enter": {
+              "stroke": {
+                "value": "transparent"
+              },
+              "width": {
+                "signal": "taskColumnWidth"
+              },
+              "height": {
+                "signal": "height"
+              }
+            }
+          },
+          "marks": [
+            {
+              "type": "text",
+              "style": "col",
+              "clip": true,
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "align": {
+                    "value": "left"
+                  },
+                  "dx": {"value": 16},
+                  "y": {
+                    "signal": "scale('y', datum['id'])+bandwidth('y')/2"
+                  },
+                  "text": {
+                    "signal": "datum['phase'] == datum['task']?upper(datum['task']):datum['task']"
+                  },
+                  "font": {
+                    "signal": "datum['phase'] == datum['task']?'Arial':'Segoe UI'"
+                  },
+                  "fontWeight": {
+                    "signal": "datum['phase'] == datum['task']?'bold':'normal'"
+                  },
+                  "limit": {
+                    "signal": "taskColumnWidth-16"
+                  },
+                  "fill": {
+                    "signal": "toString(datum['id']) == itemHovered['id']  ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):textColour"
+                  }
+                }
+              }
+            },
+            {
+              "type": "symbol",
+              "clip": true,
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "fill": {
+                    "signal": "toString(datum['id']) == itemHovered['id'] && datum['phase'] == datum['task'] ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):datum['phase'] == datum['task'] ?scale('cDark', datum['phase']):'transparent'"
+                  },
+                  "x": {
+                    "signal": "sqrt(90)/2"
+                  },
+                  "size": {"value": 90},
+                  "yc": {
+                    "signal": "(scale('y', datum['id'])+bandwidth('y')/2)-1"
+                  },
+                  "shape": {
+                    "signal": "datum['phase'] == datum['task'] && !indata('collapsedPhases', 'phase', datum['phase'])?'triangle-down':datum['phase'] == datum['task'] && indata('collapsedPhases', 'phase', datum['phase'])?'triangle-right':''"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "name": "startColumnWidth",
+          "style": "cell",
+          "title": {
+            "text": "Start",
+            "anchor": "end",
+            "frame": "group",
+            "align": "right"
+          },
+          "encode": {
+            "update": {
+              "width": {
+                "signal": "startColumnWidth"
+              },
+              "height": {
+                "signal": "height"
+              },
+              "stroke": {
+                "value": "transparent"
+              }
+            }
+          },
+          "marks": [
+            {
+              "type": "text",
+              "style": "col",
+              "clip": true,
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "align": {
+                    "value": "right"
+                  },
+                  "x": {
+                    "signal": "startColumnWidth"
+                  },
+                  "y": {
+                    "signal": "scale('y', datum['id'])+bandwidth('y')/2"
+                  },
+                  "text": {
+                    "signal": "timeFormat(datum['start'],' %d/%m/%y')"
+                  },
+                  "font": {
+                    "signal": "datum['phase'] == datum['task']?'Arial':'Segoe UI'"
+                  },
+                  "fontWeight": {
+                    "signal": "datum['phase'] == datum['task']?'bold':'normal'"
+                  },
+                  "fill": {
+                    "signal": "toString(datum['id']) == itemHovered['id']  ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):textColour"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "name": "endColumnWidth",
+          "style": "cell",
+          "title": {
+            "text": "End",
+            "anchor": "end",
+            "frame": "group",
+            "align": "right"
+          },
+          "encode": {
+            "update": {
+              "width": {
+                "signal": "endColumnWidth"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "height": {
+                "signal": "height"
+              }
+            }
+          },
+          "marks": [
+            {
+              "type": "text",
+              "style": "col",
+              "clip": true,
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "align": {
+                    "value": "right"
+                  },
+                  "x": {
+                    "signal": "endColumnWidth"
+                  },
+                  "y": {
+                    "signal": "scale('y', datum['id'])+bandwidth('y')/2"
+                  },
+                  "text": {
+                    "signal": "timeFormat(datum.labelEnd,' %d/%m/%y')"
+                  },
+                  "font": {
+                    "signal": "datum['phase'] == datum['task']?'Arial':'Segoe UI'"
+                  },
+                  "fontWeight": {
+                    "signal": "datum['phase'] == datum['task']?'bold':'normal'"
+                  },
+                  "fill": {
+                    "signal": "toString(datum['id']) == itemHovered['id']  ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):textColour"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "name": "daysColumnWidth",
+          "style": "cell",
+          "title": {
+            "text": "Days",
+            "anchor": "end",
+            "frame": "group",
+            "align": "right"
+          },
+          "encode": {
+            "update": {
+              "width": {
+                "signal": "daysColumnWidth"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "height": {
+                "signal": "height"
+              }
+            }
+          },
+          "marks": [
+            {
+              "type": "text",
+              "style": "col",
+              "clip": true,
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "align": {
+                    "value": "right"
+                  },
+                  "x": {
+                    "signal": "daysColumnWidth"
+                  },
+                  "y": {
+                    "signal": "scale('y', datum['id'])+bandwidth('y')/2"
+                  },
+                  "text": {
+                    "signal": "datum.days+' d'"
+                  },
+                  "fontWeight": {
+                    "signal": "datum['phase'] == datum['task']?'bold':'normal'"
+                  },
+                  "font": {
+                    "signal": "datum['phase'] == datum['task']?'Arial':'Segoe UI'"
+                  },
+                  "fill": {
+                    "signal": "toString(datum['id']) == itemHovered['id']  ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):textColour"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "name": "completionColumn",
+          "style": "cell",
+          "title": {
+            "text": "Status",
+            "anchor": "start",
+            "frame": "group"
+          },
+          "encode": {
+            "update": {
+              "width": {
+                "signal": "progressColumnWidth"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "height": {
+                "signal": "height"
+              }
+            }
+          },
+          "marks": [
+            {
+              "type": "rect",
+              "clip": true,
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "x": {"signal": "1"},
+                  "width": {
+                    "signal": "item.mark.group.width-2"
+                  },
+                  "stroke": {
+                    "signal": "'#a0d786'"
+                  },
+                  "yc": {
+                    "signal": "(scale('y',datum['id'])+bandwidth('y')/2)"
+                  },
+                  "fill": {
+                    "value": "white"
+                  },
+                  "height": {
+                    "signal": "bandwidth('y')-yPaddingInner*2"
+                  },
+                  "strokeWidth": {
+                    "signal": "datum['id'] == itemHovered['id']?2:1"
+                  }
+                }
+              }
+            },
+            {
+              "type": "rect",
+              "clip": true,
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "x": {"signal": "1"},
+                  "width": {
+                    "signal": "(item.mark.group.width/100)*datum['completion']"
+                  },
+                  "fill": {
+                    "signal": "'#c6ecb5'"
+                  },
+                  "yc": {
+                    "signal": "(scale('y',datum['id'])+bandwidth('y')/2)"
+                  },
+                  "strokeWidth": {
+                    "value": 1
+                  },
+                  "height": {
+                    "signal": "bandwidth('y')-yPaddingInner*2"
+                  }
+                }
+              }
+            },
+            {
+              "type": "text",
+              "clip": true,
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "align": {
+                    "value": "left"
+                  },
+                  "dx": {"value": 3},
+                  "fill": {
+                    "signal": "textColour"
+                  },
+                  "y": {
+                    "signal": "scale('y',datum['id'])+bandwidth('y')/2"
+                  },
+                  "text": {
+                    "signal": "datum['completion']+'%'"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "weekendContainer",
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "columnsWidth"
+          },
+          "y": {"signal": "-15"},
+          "clip": {"signal": "true"},
+          "height": {
+            "signal": "height+15"
+          },
+          "width": {
+            "signal": "ganttWidth"
+          },
+          "fill": {
+            "value": "transparent"
+          }
+        }
+      },
+      "marks": [
+        {
+          "type": "rect",
+          "description": "Weekend shading",
+          "name": "weekendShading",
+          "from": {"data": "weekends"},
+          "encode": {
+            "update": {
+              "x": {
+                "signal": "scale('x',datum['start'])"
+              },
+              "x2": {
+                "signal": "scale('x',datum['end'])"
+              },
+              "y": {
+                "signal": "dayBandwidthRound>=minDayBandwidth?0:15"
+              },
+              "y2": {
+                "signal": "scaledHeight<height?yRange[1]+15:height+15"
+              },
+              "strokeWidth": {
+                "signal": "1"
+              },
+              "stroke": {
+                "value": "#f1f1f1"
+              },
+              "fill": {
+                "value": "#f1f1f1"
+              }
+            }
+          }
+        },
+        {
+          "name": "todayHighlight",
+          "description": "Today highlight",
+          "type": "rect",
+          "data": [{}],
+          "encode": {
+            "update": {
+              "x": {
+                "signal": "scale('x',today) "
+              },
+              "width": {
+                "signal": "dayBandwidth"
+              },
+              "y": {"value": 0},
+              "height": {
+                "signal": "15"
+              },
+              "fill": {
+                "value": "#a5c8e4"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "ganttContainer",
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "columnsWidth"
+          },
+          "y": {"signal": "0"},
+          "clip": {"signal": "true"},
+          "height": {
+            "signal": "height"
+          },
+          "width": {
+            "signal": "ganttWidth"
+          },
+          "fill": {
+            "value": "transparent"
+          }
+        }
+      },
+      "marks": [
+        {
+          "name": "completionLabelSizes",
+          "type": "text",
+          "from": {"data": "tasks"},
+          "encode": {
+            "enter": {
+              "fill": {
+                "value": "transparent"
+              },
+              "text": ""
+            }
+          }
+        },
+        {
+          "name": "taskLabels",
+          "description": "Task, milestone and phase names",
+          "from": {"data": "yScale"},
+          "type": "text",
+          "encode": {
+            "update": {
+              "x": {
+                "scale": "x",
+                "field": "end"
+              },
+              "align": {
+                "signal": "'left'"
+              },
+              "dx": {
+                "signal": "datum.milestone?sqrt(milestoneSymbolSize)/2 - dayBandwidth/2 + 5:5"
+              },
+              "y": {
+                "signal": "datum['phase'] == datum['task']?scale('y', datum['id'])-2:scale('y', datum['id'])"
+              },
+              "dy": {
+                "signal": "bandwidth('y')/2"
+              },
+              "fill": {
+                "signal": "toString(datum['id']) == itemHovered['id']  ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):textColour"
+              },
+              "text": {
+                "signal": "datum.milestone?datum['task']:datum['task'] && datum.assignee? datum['task'] + ' ('+ datum.days+' d'+')' +' - ' + datum.assignee:datum['task'] + ' ('+ datum.days+' d'+')'"
+              }
+            }
+          }
+        },
+        {
+          "type": "group",
+          "from": {
+            "facet": {
+              "name": "dependencyLinesFacet",
+              "data": "dependencyLines",
+              "groupby": [
+                "id",
+                "sourceId"
+              ]
+            }
+          },
+          "marks": [
+            {
+              "type": "line",
+              "from": {
+                "data": "dependencyLinesFacet"
+              },
+              "encode": {
+                "enter": {
+                  "x": {
+                    "signal": "datum.value[0]"
+                  },
+                  "y": {
+                    "signal": "datum.value[1]"
+                  },
+                  "stroke": {
+                    "value": "#888888"
+                  },
+                  "strokeWidth": {
+                    "value": 1
+                  },
+                  "interpolate": {
+                    "value": "linear"
+                  },
+                  "strokeJoin": {
+                    "value": "bevel"
+                  },
+                  "strokeCap": {
+                    "value": "round"
+                  },
+                  "defined": {
+                    "value": true
+                  }
+                },
+                "update": {
+                  "stroke": {
+                    "signal": "toString(datum['id']) == itemHovered['id']  ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):'#888888'"
+                  },
+                  "strokeWidth": {
+                    "signal": "datum['id'] == itemHovered['id']?1.5:1"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "todayRule",
+          "description": "Today rule",
+          "type": "rule",
+          "data": [{}],
+          "encode": {
+            "update": {
+              "x": {
+                "signal": "scale('x',today+oneDay/2) "
+              },
+              "y2": {
+                "signal": "scaledHeight<height?yRange[1]:height"
+              },
+              "strokeWidth": {
+                "value": 1
+              },
+              "stroke": {
+                "value": "#377eb9"
+              },
+              "strokeDash": {
+                "value": [2, 2]
+              },
+              "opacity": {"value": 0.8}
+            }
+          }
+        },
+        {
+          "name": "todayText",
+          "description": "Today text",
+          "type": "text",
+          "data": [{}],
+          "encode": {
+            "update": {
+              "x": {
+                "signal": "scale('x',today+oneDay/2)"
+              },
+              "fill": {
+                "value": "#377eb9"
+              },
+              "text": {
+                "value": "Today"
+              },
+              "angle": {"signal": "90"},
+              "baseline": {
+                "value": "bottom"
+              },
+              "dx": {"value": 10},
+              "dy": {"value": -4},
+              "opacity": {"value": 0.7}
+            }
+          }
+        },
+        {
+          "name": "taskBars",
+          "description": "The task bars (serve as an outline for percent complete)",
+          "type": "group",
+          "from": {"data": "tasks"},
+          "encode": {
+            "update": {
+              "clip": {
+                "signal": "true"
+              },
+              "x": {
+                "scale": "x",
+                "field": "start"
+              },
+              "x2": {
+                "scale": "x",
+                "field": "end"
+              },
+              "yc": {
+                "signal": "(scale('y',datum['id'])+bandwidth('y')/2)"
+              },
+              "height": {
+                "signal": "bandwidth('y')-yPaddingInner*2"
+              },
+              "tooltip": {
+                "signal": "showTooltips&&down==null?{'Phase':datum['phase'] ,'Task':datum['task'] , 'Start':timeFormat(datum['start'],'%a, %d %B %Y' ),'End':timeFormat(datum.labelEnd,'%a, %d %B %Y' ), 'Days':datum.days, 'Assignee':datum.assignee ,'Status':'Status' }:null"
+              },
+              "fill": {
+                "signal": "toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1 ?merge(hsl(scale('cLight', datum['phase'])), {l:0.65}):scale('cLight', datum['phase'])"
+              },
+              "stroke": {
+                "signal": "toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1 ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):scale('cDark', datum['phase'])"
+              },
+              "cornerRadius": {
+                "value": 5
+              },
+              "zindex": {"value": 101},
+              "strokeWidth": {
+                "signal": "toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1 ?1.5:1"
+              }
+            }
+          },
+          "transform": [
+            {
+              "type": "lookup",
+              "from": "completionLabelSizes",
+              "key": "datum['id']",
+              "fields": ["datum['id']"],
+              "values": [
+                "bounds.x1",
+                "bounds.x2"
+              ],
+              "as": ["a", "b"]
+            }
+          ],
+          "marks": [
+            {
+              "name": "taskFills",
+              "description": "Percent complete for each task",
+              "type": "rect",
+              "interactive": false,
+              "encode": {
+                "update": {
+                  "x": {"signal": "0"},
+                  "y": {"signal": "0"},
+                  "height": {
+                    "signal": "item.mark.group.height"
+                  },
+                  "width": {
+                    "signal": "(item.mark.group.width/100)* item.mark.group.datum['completion']"
+                  },
+                  "fill": {
+                    "signal": "toString(item.mark.group.datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(item.mark.group.datum['id']) )> -1 ?merge(hsl(scale('cDark', item.mark.group.datum['phase'])), {l:0.40}):scale('cDark', item.mark.group.datum['phase'])"
+                  },
+                  "strokeWidth": {
+                    "value": 0
+                  },
+                  "cornerRadiusBottomLeft": {
+                    "value": 5
+                  },
+                  "cornerRadiusTopLeft": {
+                    "value": 5
+                  }
+                }
+              }
+            },
+            {
+              "name": "completeText",
+              "description": "Completion Text",
+              "type": "text",
+              "interactive": false,
+              "encode": {
+                "update": {
+                  "x": {
+                    "signal": "(item.mark.group.width/100)* parent['completion']"
+                  },
+                  "align": {
+                    "signal": "'right'"
+                  },
+                  "dx": {
+                    "signal": "-2"
+                  },
+                  "baseline": {
+                    "value": "middle"
+                  },
+                  "y": {
+                    "signal": "item.mark.group.height/2+1"
+                  },
+                  "text": "Status",
+                  "fill": {
+                    "signal": "luminance(item.mark.group.stroke) >=0.45?'black':'white'"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "phaseOutline",
+          "description": "The phase bar outlines",
+          "type": "path",
+          "from": {
+            "data": "phasePaths"
+          },
+          "encode": {
+            "update": {
+              "path": {
+                "signal": ""
+              },
+              "fill": {
+                "signal": "toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1 ?merge(hsl(scale('cLight', datum['phase'])), {l:0.65}):scale('cLight', datum['phase'])"
+              },
+              "stroke": {
+                "signal": "toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1 ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):scale('cDark', datum['phase'])"
+              },
+              "strokeWidth": {
+                "signal": "datum['id'] == itemHovered['id']?1.5:1"
+              },
+              "tooltip": {
+                "signal": "showTooltips&&down==null?{'Phase':datum['phase'] , 'Start':timeFormat(datum['start'],'%a, %d %B %Y' ),'End':timeFormat(datum.labelEnd,'%a, %d %B %Y' ), 'Days':datum.days,'Progress':datum['completion']+'%' }:null"
+              },
+              "cursor": {
+                "value": "pointer"
+              }
+            }
+          }
+        },
+        {
+          "name": "phaseGroup",
+          "description": "Group to hold the x y coordinates for the SVG clipping fills",
+          "type": "group",
+          "clip": true,
+          "from": {
+            "data": "phasePaths"
+          },
+          "encode": {
+            "update": {
+              "strokeWidth": {
+                "value": 0
+              },
+              "stroke": {
+                "value": "red"
+              },
+              "x": {
+                "scale": "x",
+                "field": "start",
+                "offset": 0
+              },
+              "x2": {
+                "scale": "x",
+                "field": "end",
+                "offset": 0
+              },
+              "yc": {
+                "signal": "scale('y',datum['id'])+bandwidth('y')/2"
+              },
+              "height": {
+                "signal": "bandwidth('y')-yPaddingInner*2"
+              }
+            }
+          },
+          "marks": [
+            {
+              "name": "phaseFills",
+              "description": "Percent complete for each phase. Clipping path signal has to be here as it fails to update on zoom when coming from a dataset. The only value available in the clipping path signal is parent!",
+              "type": "rect",
+              "interactive": false,
+              "clip": {
+                "path": {
+                  "signal": "'M 0 0'  + ' L ' +   (scale('x', parent['end']) - scale('x', parent['start'])) +' 0'    + ' v ' +  phaseSymbolHeight + ' L ' + (scale('x', parent['end']) - scale('x', parent['start']) - phaseSymbolWidth) +' '  +   (phaseSymbolHeight/2) + ' H ' +  phaseSymbolWidth + ' L 0 '   +   phaseSymbolHeight + ' z'"
+                }
+              },
+              "encode": {
+                "update": {
+                  "height": {
+                    "signal": "phaseSymbolHeight"
+                  },
+                  "width": {
+                    "signal": "(item.mark.group.width/100)* item.mark.group.datum['completion']"
+                  },
+                  "fill": {
+                    "signal": "toString(item.mark.group.datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(item.mark.group.datum['id']) )> -1 ?merge(hsl(scale('cDark', item.mark.group.datum['phase'])), {l:0.40}):scale('cDark', item.mark.group.datum['phase'])"
+                  },
+                  "strokeWidth": {
+                    "value": 0
+                  },
+                  "stroke": {
+                    "value": "red"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "milestoneSymbols",
+          "description": "Milestones",
+          "type": "symbol",
+          "from": {
+            "data": "milestones"
+          },
+          "encode": {
+            "update": {
+              "x": {
+                "signal": "scale('x',datum['start'])+dayBandwidth/2"
+              },
+              "y": {
+                "signal": "scale('y', datum['id'])+bandwidth('y')/2"
+              },
+              "size": {
+                "signal": "milestoneSymbolSize"
+              },
+              "shape": {
+                "value": "diamond"
+              },
+              "fill": {
+                "signal": "(toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1)  && datum['completion'] > 0 ?merge(hsl(scale( 'cDark', datum['phase'])), {l:0.40}):toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1   ?merge(hsl(scale( 'cLight', datum['phase'])), {l:0.65}):datum['completion'] > 0?  scale('cDark', datum['phase']):scale('cLight', datum['phase'])"
+              },
+              "stroke": {
+                "signal": "toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1 ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):scale('cDark', datum['phase'])"
+              },
+              "strokeWidth": {
+                "signal": "toString(datum['id']) == itemHovered['id']  || indexof(itemHovered.dependencies,toString(datum['id']) )> -1  ?1.5:1"
+              },
+              "tooltip": {
+                "signal": "showTooltips&&down==null?{'Phase':datum['phase'] ,'Task':datum['task'] , 'Start':timeFormat(datum['start'],'%a, %d %B %Y' ),'End':timeFormat(datum.labelEnd,'%a, %d %B %Y' ), 'Days':datum.days,'Assignee':datum.assignee ,'Status':'Status' }:null"
+              }
+            }
+          }
+        },
+        {
+          "name": "taskDependencyArrowsymbol",
+          "description": "Dependency arrows",
+          "type": "symbol",
+          "from": {
+            "data": "dependencyArrows"
+          },
+          "encode": {
+            "update": {
+              "shape": {
+                "value": "triangle-right"
+              },
+              "x": {
+                "signal": "scale('x',datum['start'])",
+                "offset": {
+                  "signal": "datum.milestone!=null && datum.milestone != false? -(sqrt(arrowSymbolSize))/2 + dayBandwidth/2 - (sqrt(milestoneSymbolSize))/2 +1:-(sqrt(arrowSymbolSize)/2) +1"
+                }
+              },
+              "y": {
+                "signal": "scale('y', datum['id'])+bandwidth('y')/2"
+              },
+              "fill": {
+                "signal": "toString(datum['id']) == itemHovered['id']  ?merge(hsl(scale('cDark', datum['phase'])), {l:0.40}):'#6a6a6a'"
+              },
+              "size": {
+                "signal": "arrowSymbolSize"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "taskSelector",
+      "description": "Hidden rect to support phase expand and collapse",
+      "type": "rect",
+      "clip": true,
+      "zindex": 99,
+      "from": {"data": "yScale"},
+      "encode": {
+        "update": {
+          "x": {"value": -15},
+          "x2": {
+            "signal": "columnsWidth"
+          },
+          "y": {
+            "signal": "scale('y', datum['id'])"
+          },
+          "height": {
+            "signal": "bandwidth('y')"
+          },
+          "fill": {
+            "value": "transparent"
+          },
+          "cursor": {
+            "signal": "datum['phase'] == datum['task']?'pointer':'auto'"
+          }
+        }
+      }
+    },
+    {
+      "type": "group",
+      "name": "axisClipper",
+      "style": "cell",
+      "clip": true,
+      "encode": {
+        "enter": {
+          "width": {
+            "signal": "columnsWidth"
+          },
+          "stroke": {
+            "value": "transparent"
+          },
+          "height": {"signal": "height"}
+        }
+      },
+      "axes": [
+        {
+          "scale": "y",
+          "orient": "right",
+          "encode": {
+            "ticks": {
+              "update": {
+                "x2": {
+                  "signal": "-columnsWidth"
+                }
+              }
+            }
+          },
+          "tickColor": "#f1f1f1",
+          "labels": false,
+          "title": "",
+          "grid": false,
+          "ticks": true,
+          "bandPosition": {
+            "signal": "0"
+          }
+        }
+      ]
+    }
+  ]

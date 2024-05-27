@@ -1,0 +1,50 @@
+[
+    {
+      "name": "x",
+      "type": "time",
+      "domain": {"signal": "xDom"},
+      "range": {
+        "signal": "[0,ganttWidth]"
+      }
+    },
+    {
+      "name": "y",
+      "type": "band",
+      "domain": {
+        "fields": [
+          {
+            "data": "yScale",
+            "field": "id"
+          }
+        ],
+        "sort": {
+          "op": "min",
+          "field": "finalSort",
+          "order": "ascending"
+        }
+      },
+      "range": {"signal": "yRange"}
+    },
+    {
+      "name": "cDark",
+      "type": "ordinal",
+      "range": {
+        "signal": "coloursDark"
+      },
+      "domain": {
+        "data": "input",
+        "field": "phase"
+      }
+    },
+    {
+      "name": "cLight",
+      "type": "ordinal",
+      "range": {
+        "signal": "coloursLight"
+      },
+      "domain": {
+        "data": "input",
+        "field": "phase"
+      }
+    }
+  ]
