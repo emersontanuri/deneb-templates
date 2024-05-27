@@ -1,0 +1,15 @@
+{
+  "name": "deneb-templates",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "parse": "node ./script/parse-json.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "coded-json": "^2.0.0"
+  }
+}

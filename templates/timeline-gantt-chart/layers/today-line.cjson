@@ -1,0 +1,20 @@
+{
+  "transform": [
+    {
+      "calculate": "now()",
+      "as": "now_field"
+    }
+  ],
+  "mark": {
+    "type": "rule",
+    "color": "#003285",
+    "size": 2,
+    "opacity": 1
+  },
+  "encoding": {
+    "x": {
+      "field": "now_field",
+      "type": "temporal"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "data": { "name": "dataset" },
+  "height": { "step": 40 },
+  "layer": $import "./layers/index.cjson"
+}
