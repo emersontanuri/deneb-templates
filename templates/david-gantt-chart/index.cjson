@@ -9,9 +9,9 @@
     "bottom": 0
   },
   "signals": $import "./signals/index.cjson",
-  "data": $import "./data/index.cjson",
-  "marks": $import "./marks/index.cjson",
-  "axes": $import "./axes/index.cjson",
-  "scales": $import "./scales/index.cjson",
-  "config": $import "./config/index.cjson"
+  "data": $import "../data/index.cjson",
+  "marks": $import "../../marks/index.cjson",
+  "axes": $import "../axes/index.cjson",
+  "scales": $import "../scales/index.cjson",
+  "config": $import "../config/index.cjson"
 }

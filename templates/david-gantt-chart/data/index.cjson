@@ -1,10 +1,10 @@
 [
     {"name": "dataset"},
     $import "./input/main-input.cjson",
-    $import "./input/phases.cjson",
-    $import "./components/dependency/phase-arrows.cjson",
-    $import "./components/dependency/lines.cjson",
-    $import "./components/buttons.cjson",
+    $import "./phases.cjson",
+    $import "../components/dependency/phase-arrows.cjson",
+    $import "./lines.cjson",
+    $import "../../components/buttons.cjson",
     {
       "name": "collapsedPhases",
       "on": [
