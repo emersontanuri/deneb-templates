@@ -1,0 +1,133 @@
+{
+  "name": "dependencyLines",
+  "source": [
+    "yScale",
+    "phaseDependencyArrows"
+  ],
+  "transform": [
+    {
+      "type": "filter",
+      "expr": "isValid(datum.dependencies) && datum.dependencies!='' "
+    },
+    {
+      "type": "formula",
+      "as": "dependencies",
+      "expr": "split(datum.dependencies,',')"
+    },
+    {
+      "type": "flatten",
+      "fields": ["dependencies"]
+    },
+    {
+      "type": "lookup",
+      "from": "input",
+      "key": "id",
+      "values": [
+        "id",
+        "end",
+        "phase"
+      ],
+      "fields": ["dependencies"],
+      "as": [
+        "sourceId",
+        "sourceEnd",
+        "sourcePhase"
+      ]
+    },
+    {
+      "type": "lookup",
+      "from": "phases",
+      "key": "phase",
+      "values": ["id", "end"],
+      "fields": ["sourcePhase"],
+      "as": [
+        "sourcePhaseId",
+        "sourcePhaseEnd"
+      ]
+    },
+    {
+      "type": "formula",
+      "as": "sourceId",
+      "expr": "indata('collapsedPhases', 'phase', datum.sourcePhase) == true?datum.sourcePhaseId:datum.sourceId"
+    },
+    {
+      "type": "formula",
+      "as": "sourceEnd",
+      "expr": "indata('collapsedPhases', 'phase', datum.sourcePhase) == true?datum.sourcePhaseEnd:datum.sourceEnd"
+    },
+    {
+      "type": "formula",
+      "as": "plottedStart",
+      "expr": "datum.milestone == null || datum.milestone == false?scale('x',datum['start'])- sqrt(arrowSymbolSize) - 1:(scale('x',datum['start']) +(dayBandwidth/2) - (sqrt(milestoneSymbolSize)/2) - sqrt(arrowSymbolSize)) - 1"
+    },
+    {
+      "type": "formula",
+      "as": "plottedSourceEnd",
+      "expr": "scale('x',datum.sourceEnd) - (dayBandwidth/2) "
+    },
+    {
+      "type": "formula",
+      "as": "a",
+      "expr": "[datum.milestone == null || datum.milestone == false?scale('x',datum['start']):scale('x',datum['start']) +(dayBandwidth/2) - (sqrt(milestoneSymbolSize)/2)  ,scale('y', datum['id'])+bandwidth('y')/2 ]"
+    },
+    {
+      "type": "formula",
+      "as": "b",
+      "expr": "[datum.plottedStart >= datum.plottedSourceEnd?datum.plottedSourceEnd :datum.plottedStart ,scale('y', datum['id'])+bandwidth('y')/2]"
+    },
+    {
+      "type": "formula",
+      "as": "c",
+      "expr": "[datum.plottedSourceEnd,scale('y',datum.sourceId)+bandwidth('y')/2]"
+    },
+    {
+      "type": "formula",
+      "as": "d",
+      "expr": "[datum.plottedStart > datum.plottedSourceEnd?null:datum.plottedStart ,datum.plottedStart > datum.plottedSourceEnd?null:scale('y',datum.sourceId)+(bandwidth('y'))]"
+    },
+    {
+      "type": "formula",
+      "as": "e",
+      "expr": "[datum.plottedStart > datum.plottedSourceEnd?null:datum.plottedSourceEnd,datum.plottedStart > datum.plottedSourceEnd?null:scale('y',datum.sourceId)+(bandwidth('y'))]"
+    },
+    {
+      "type": "fold",
+      "fields": [
+        "a",
+        "b",
+        "d",
+        "e",
+        "c"
+      ]
+    },
+    {
+      "type": "filter",
+      "expr": "datum.value[0] != null"
+    },
+    {
+      "type": "formula",
+      "as": "value0",
+      "expr": "datum.value[0]"
+    },
+    {
+      "type": "formula",
+      "as": "value1",
+      "expr": "datum.value[1]"
+    },
+    {
+      "type": "window",
+      "ops": ["row_number"],
+      "as": ["duplicates"],
+      "groupby": [
+        "id",
+        "sourceId",
+        "value0",
+        "value1"
+      ]
+    },
+    {
+      "type": "filter",
+      "expr": "datum.duplicates == 1"
+    }
+  ]
+}

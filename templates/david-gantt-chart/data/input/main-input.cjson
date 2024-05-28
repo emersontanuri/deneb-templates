@@ -1,0 +1,56 @@
+{
+  "name": "input",
+  "source": "dataset",
+  "transform": [
+    {
+      "type": "formula",
+      "as": "start",
+      "expr": "utc(year(datum['start']),month(datum['start']),date(datum['start']))"
+    },
+    {
+      "type": "formula",
+      "as": "end",
+      "expr": "utc(year(datum['end']),month(datum['end']),date(datum['end']))"
+    },
+    {
+      "type": "formula",
+      "as": "labelEnd",
+      "expr": "datum['end']"
+    },
+    {
+      "type": "formula",
+      "as": "end",
+      "expr": "datetime(+datum['end']+oneDay)"
+    },
+    {
+      "type": "formula",
+      "as": "days",
+      "expr": "(datum['end']-datum['start'])/oneDay"
+    },
+    {
+      "type": "formula",
+      "as": "completionLabel",
+      "expr": "datum['completion']+'%'"
+    },
+    {
+      "type": "window",
+      "sort": {
+        "field": "start",
+        "order": "ascending"
+      },
+      "ops": ["rank"],
+      "as": ["taskSort"],
+      "groupby": ["phase"]
+    },
+    {
+      "type": "formula",
+      "as": "start",
+      "expr": "+datum['start']"
+    },
+    {
+      "type": "formula",
+      "as": "end",
+      "expr": "+datum['end']"
+    }
+  ]
+}

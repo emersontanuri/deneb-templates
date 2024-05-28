@@ -1,0 +1,39 @@
+{
+  "name": "buttons",
+  "values": [
+    {
+      "side": "left",
+      "text": "Close",
+      "x": 15,
+      "leftRadius": 4
+    },
+    {
+      "side": "left",
+      "text": "Open",
+      "x": 65,
+      "rightRadius": 4
+    },
+    {
+      "side": "right",
+      "text": "All",
+      "x": 50,
+      "rightRadius": 4
+    },
+    {
+      "side": "right",
+      "text": "Years",
+      "x": 100
+    },
+    {
+      "side": "right",
+      "text": "Months",
+      "x": 150
+    },
+    {
+      "side": "right",
+      "text": "Days",
+      "x": 200,
+      "leftRadius": 4
+    }
+  ]
+}

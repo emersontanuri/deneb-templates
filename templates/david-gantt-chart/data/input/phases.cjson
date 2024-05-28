@@ -1,0 +1,71 @@
+{
+  "name": "phases",
+  "source": "input",
+  "transform": [
+    {
+      "type": "aggregate",
+      "fields": [
+        "start",
+        "end",
+        "completion",
+        "task",
+        "completion",
+        "labelEnd"
+      ],
+      "ops": [
+        "min",
+        "max",
+        "sum",
+        "count",
+        "mean",
+        "max"
+      ],
+      "as": [
+        "start",
+        "end",
+        "sum",
+        "count",
+        "completion",
+        "labelEnd"
+      ],
+      "groupby": ["phase"]
+    },
+    {
+      "type": "formula",
+      "as": "task",
+      "expr": "datum['phase']"
+    },
+    {
+      "type": "formula",
+      "as": "taskSort",
+      "expr": "0"
+    },
+    {
+      "type": "formula",
+      "as": "completion",
+      "expr": "round(datum['completion'])"
+    },
+    {
+      "type": "formula",
+      "as": "days",
+      "expr": "(datum['end']-datum['start'])/oneDay"
+    },
+    {
+      "type": "window",
+      "sort": {
+        "field": "start",
+        "order": "ascending"
+      },
+      "ops": [
+        "row_number",
+        "row_number"
+      ],
+      "as": ["phaseSort", "id"]
+    },
+    {
+      "type": "formula",
+      "as": "id",
+      "expr": "length(data('input'))+datum['id']+'^^^^^'"
+    }
+  ]
+}

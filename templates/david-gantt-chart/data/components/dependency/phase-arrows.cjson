@@ -1,0 +1,61 @@
+{
+      "name": "phaseDependencyArrows",
+      "source": "input",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "indata('collapsedPhases', 'phase', datum['phase']) "
+        },
+        {
+          "type": "joinaggregate",
+          "fields": ["id", "start"],
+          "ops": ["values", "min"],
+          "as": [
+            "allPhaseIds",
+            "start"
+          ],
+          "groupby": ["phase"]
+        },
+        {
+          "type": "formula",
+          "as": "id",
+          "expr": "toString(datum['id'])"
+        },
+        {
+          "type": "formula",
+          "as": "allPhaseIds",
+          "expr": "pluck(datum.allPhaseIds, 'id')"
+        },
+        {
+          "type": "formula",
+          "as": "dependencies",
+          "expr": "split(datum.dependencies,',')"
+        },
+        {
+          "type": "flatten",
+          "fields": ["dependencies"]
+        },
+        {
+          "type": "formula",
+          "as": "internalDependenciesIndex",
+          "expr": "indexof(datum.allPhaseIds,datum.dependencies)"
+        },
+        {
+          "type": "formula",
+          "as": "milestone",
+          "expr": "null"
+        },
+        {
+          "type": "filter",
+          "expr": "datum.dependencies!='null' && datum.dependencies!='' && datum.internalDependenciesIndex == -1 "
+        },
+        {
+          "type": "lookup",
+          "from": "phases",
+          "key": "phase",
+          "values": ["id"],
+          "fields": ["phase"],
+          "as": ["id"]
+        }
+      ]
+    }
